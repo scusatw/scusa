@@ -4,10 +4,10 @@
     --text-white: #FFFFFF;         /* 白色文字 */
     --navbarback: #005388;
     --sidebar-bg: #005388;         /* 側邊欄背景 */
-    --main-bg: rgba(242, 241, 241, 0.8);            /* 主背景色 */
-    --border-color: #455b76;       /* 邊框顏色 */
-    --link-hover: #44296b; /* 連結懸停顏色 */
-    --link-color: #6887ae;         /* 一般連結顏色 */
+    --main-bg: rgba(219, 219, 219, 0.8);            /* 主背景色 */
+    --border-color: #005388;       /* 邊框顏色 */
+    --link-hover: #005388; /* 連結懸停顏色 */
+    --link-color: #005388;         /* 一般連結顏色 */
     --submenu-hover: #ffb7c3;      /* 子選單懸停顏色 */
     --footer-bg: #8f1f18;             /* 頁腳背景 */
     --footer-link: #7a7a89;           /* 頁腳連結 */
