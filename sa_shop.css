@@ -4,7 +4,7 @@
     --text-white: #FFFFFF;         /* 白色文字 */
     --navbarback: #005388;
     --sidebar-bg: #005388;         /* 側邊欄背景 */
-    --main-bg: rgba(219, 219, 219, 0.8);            /* 主背景色 */
+    --main-bg: rgba(255, 255, 255, 0.8);            /* 主背景色 */
     --border-color: #005388;       /* 邊框顏色 */
     --link-hover: #005388; /* 連結懸停顏色 */
     --link-color: #005388;         /* 一般連結顏色 */
