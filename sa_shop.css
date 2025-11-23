@@ -1,20 +1,20 @@
 /* 顏色變數定義 */
 :root {
-    --text-light: #312d88;         /* 淺色文字 */
-    --text-white: #312d88;         /* 白色文字 */
-    --navbarback: #ffdf5a;
-    --sidebar-bg: #ffdf5a;         /* 側邊欄背景 */
+    --text-light: #FFFFFF;         /* 淺色文字 */
+    --text-white: #FFFFFF;         /* 白色文字 */
+    --navbarback: #005388;
+    --sidebar-bg: #005388;         /* 側邊欄背景 */
     --main-bg: rgba(242, 241, 241, 0.8);            /* 主背景色 */
     --border-color: #455b76;       /* 邊框顏色 */
     --link-hover: #44296b; /* 連結懸停顏色 */
     --link-color: #6887ae;         /* 一般連結顏色 */
     --submenu-hover: #ffb7c3;      /* 子選單懸停顏色 */
-    --footer-bg: #312d88;             /* 頁腳背景 */
+    --footer-bg: #8f1f18;             /* 頁腳背景 */
     --footer-link: #7a7a89;           /* 頁腳連結 */
     --footer-hover-bg: #777699;       /* 頁腳懸停背景 */
     --footer-border: #32314a;         /* 頁腳分隔線 */
     --footer-text: #7a7a89;           /* 頁腳文字 */
-    --faf8ff: #312d88;             /* 額外白色文字 */
+    --faf8ff: #FFFFFF;             /* 額外白色文字 */
 }
 
 /* 全局樣式 */

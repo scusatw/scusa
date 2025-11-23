@@ -10,7 +10,7 @@
     <style>
         /* 中央對齊容器樣式 */
         .centered {
-            background-color: #2f2f87;
+            background-color: #8f1f18;
             width: 100%; /* 可根據需求調整 */
             display: flex;
             justify-content: center;
@@ -46,11 +46,11 @@
 
         /* 滑鼠懸停時的樣式 */
         a:hover {
-            color: #312d88;
+            color: #ffffff;
             text-decoration: underline;
         }
         body {
-            color: #312d88;
+            color: #ffffff;
             font-family: Arial, sans-serif;
             font-weight: bolder;
         }
@@ -71,7 +71,7 @@
             overflow: hidden;
             background-color: rgba(242, 241, 241, 0.8);
             transition: all 0.3s ease;
-            color: #312d88;
+            color: #ffffff;
 
         }
         @media screen and (max-width: 768px) {
@@ -83,12 +83,12 @@
             overflow: hidden;
             background-color: rgba(242, 241, 241, 0.8);
             transition: all 0.3s ease;
-            color: #312d88;
+            color: #ffffff;
 
             
         }
         .google-map {
-            background-color: #2f2f87;
+            background-color: #8f1f18;
             margin-top: 50px; /* 頂部間距 */
             width: 100%; /* 可根據需求調整 */
             height: 400px;
@@ -110,7 +110,7 @@
             font-size: 18px;
             font-weight: bold;
             margin: 15px 0;
-            color: #312d88;
+            color: #ffffff;
         }
         .details-section {
             text-align: center;
@@ -118,7 +118,7 @@
             margin: 10px 0;
             border-radius: 5px;
             overflow: hidden;
-            color: #312d88;
+            color: #ffffff;
 
         }
         .details-header {
@@ -150,8 +150,8 @@
             padding: 0;
             padding-left: 20px;
             color: #38322b;
-            background-color: #ffdf5a;
-            color: #312d88;
+            background-color: #005388;
+            color: #ffffff;
             border-radius: 5px;
             margin-top: 0;
             text-align: left; /* 讓內容置左 */
@@ -160,6 +160,32 @@
             padding-left: 20px;
             line-height: 200%;
         }
+
+        .map-wrapper {
+            width: 60%;            /* 桌機版：內容 60% */
+            max-width: 60%;
+            margin: 30px auto;     /* 置中 + 外距 */
+            display: block;
+        }
+
+        .responsive-map {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* ------- 手機版設定 (寬度小於 768px) ------- */
+        @media (max-width: 768px) {
+            .map-wrapper {
+                width: 100%;       /* 手機版：滿版 */
+                max-width: 100%;
+                margin: 10px;         /* 手機版：沒 margin（左右貼邊） */
+                border-radius: 0;  /* 如果你不想手機版四角圓角，可加；想保留就刪掉 */
+            }
+        }
+
+
     </style>
 </head>
 
@@ -194,6 +220,12 @@
 
             <!-- 中央顯示 Google 地圖 -->
             <div class="centered  slide-up">
+                <div class="map-wrapper">
+                    <a href="https://maps.app.goo.gl/HBoMQwXYr9AnpSJW8" target="_blank" rel="noopener noreferrer">
+                        <img src="https://i.meee.com.tw/WyPjFFy.png" alt="景點地圖" class="responsive-map">
+                    </a>
+                </div>
+
             </div>
 
             <!-- 置中顯示 Word 文件 -->
