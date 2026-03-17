@@ -5,437 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>東吳大學學生選舉事務委員會</title>
     <link rel="stylesheet" href="sa_election.css">
-
     <link rel="icon" href="elected.png" type="image/x-icon">
     <style>
-        .form-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+        .form-container { max-width: 1200px; margin: 0 auto; padding: 20px; font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; }
+        .forms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .form-card { background: #ffffff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; height: 100%; border: 1px solid #eaeaea; }
+        .form-card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12); }
+        .form-header { background: rgb(224, 227, 230); color: rgb(0, 0, 0); padding: 15px 20px; }
+        .form-title { font-size: 20px; font-weight: bold; margin: 0; }
+        .form-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .form-detail { font-size: 14px; color:rgb(171, 179, 191); margin-bottom: 15px; line-height: 1.5; }
+        .form-detail h2 { font-size: 18px; color: rgb(255, 0, 0); font-weight: bold; margin-bottom: 15px; line-height: 1.5; }
+        .deadline { display: flex; align-items: center; margin-bottom: 10px; color: #a20808; font-weight: bold; }
+        .deadline-icon { margin-right: 5px; }
+        .eligibility { margin-bottom: 20px; color: #333; }
+        .countdown { text-align: center; font-size: 14px; margin-top: 10px; color: #272727; font-weight: bold; }
+        .form-button { display: block; background: #272727; color: white; border: none; border-radius: 5px; padding: 10px 0; font-size: 16px; font-weight: bold; text-align: center; text-decoration: none; cursor: pointer; transition: background 0.3s ease; margin-top: auto; width: 100%; }
+        .form-button:hover { background: #000000; }
+        .empty-state { background: #f9f9f9; border-radius: 10px; padding: 40px 20px; text-align: center; color: #7f8c8d; font-size: 18px; margin-top: 20px; box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03); border: 1px solid #eaeaea; }
+        .empty-icon { font-size: 50px; margin-bottom: 15px; color: #bdc3c7; }
+        .loading { text-align: center; padding: 40px; color: #7f8c8d; }
+
+        @media (min-width: 781px) {
+            .single-form { grid-template-columns: minmax(0, 400px) !important; justify-content: center; }
+            .double-forms { grid-template-columns: repeat(2, minmax(0, 400px)) !important; justify-content: center; }
         }
 
-        .forms-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
+        @media (max-width: 900px) { .forms-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) { .forms-grid { grid-template-columns: 1fr; } }
 
-        .form-card {
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            border: 1px solid #eaeaea;
-        }
+        .announcement-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .detail-btn { background-color: #737373; color: white; border: none; border-radius: 5px; padding: 5px 15px; cursor: pointer; transition: background-color 0.3s ease; }
+        .detail-btn:hover { background-color: #aeaeae; }
+        .iframe-container { transition: all 0.3s ease; overflow: hidden; }
 
-        .form-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-        }
-
-        .form-header {
-            background: rgb(224, 227, 230);
-            color: rgb(0, 0, 0);
-            padding: 15px 20px;
-        }
-
-        .form-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        .form-content {
-            padding: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-detail {
-            font-size: 14px;
-            color:rgb(171, 179, 191);
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .form-detail h2 {
-            font-size: 18px;
-            color: rgb(255, 0, 0);
-            font-weight: bold;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .deadline {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            color: #a20808;
-            font-weight: bold;
-        }
-
-        .deadline-icon {
-            margin-right: 5px;
-        }
-
-        .eligibility {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .countdown {
-            text-align: center;
-            font-size: 14px;
-            margin-top: 10px;
-            color: #272727;
-            font-weight: bold;
-        }
-
-        .form-button {
-            display: block;
-            background: #272727;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 0;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            margin-top: auto;
-            width: 100%;
-        }
-
-        .form-button:hover {
-            background: #000000;
-        }
-
-        .empty-state {
-            background: #f9f9f9;
-            border-radius: 10px;
-            padding: 40px 20px;
-            text-align: center;
-            color: #7f8c8d;
-            font-size: 18px;
-            margin-top: 20px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.03);
-            border: 1px solid #eaeaea;
-        }
-
-        .empty-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: #bdc3c7;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-
-/* 在中大螢幕上居中顯示單筆表單 */
-@media (min-width: 781px) {
-    .single-form {
-        grid-template-columns: minmax(0, 400px) !important;
-        justify-content: center;
-    }
-
-    .double-forms {
-        grid-template-columns: repeat(2, minmax(0, 400px)) !important;
-        justify-content: center;
-    }
-}
-
-/* 保留原本的響應式設計 */
-@media (max-width: 900px) {
-    .forms-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 600px) {
-    .forms-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-
-
-        /* 新增樣式 */
-.announcement-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.detail-btn {
-    background-color: #737373;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    padding: 5px 15px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.detail-btn:hover {
-    background-color: #aeaeae;
-}
-
-.iframe-container {
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-
-
-
-
-
-
-
-        /* 預設連結樣式 */
-        a {
-            color:#1c2807;
-            text-decoration: none;
-        }
-
-        /* 滑鼠懸停時的樣式 */
-        a:hover {
-            color: rgb(255, 255, 255);
-            text-decoration: underline;
-        }
-        .updateTime {
-        bottom: 10px;
-        font-size: 0.8em;
-        color: #434553;
+        a { color:#1c2807; text-decoration: none; }
+        a:hover { color: rgb(255, 255, 255); text-decoration: underline; }
         
-    }
+        .updateTime { bottom: 10px; font-size: 0.8em; color: #434553; }
+        .calendar-container { display: flex; width: 100%; max-width: 100%; margin-bottom: 100px; gap: 35px; }
+        .calendar { width: 50%; padding: 20px; background-color: rgb(255, 255, 255); border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); color: #1f1f1f; margin-bottom: 100px; }
+        .events { width: 50%; padding: 20px; background-color: rgb(255, 255, 255); border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); margin-bottom: 100px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .calendar-day { padding: 10px; border-radius: 5px; cursor: pointer; }
+        .calendar-day:hover { background-color: #f8f8f8; }
+        .highlight { border: 2px solid #b84a37; }
+        .events h2 { color: #2b2b2b; }
+        .event-list { max-height: 300px; overflow-y: auto; }
+        .event-item { padding: 10px; margin: 5px 0; border-radius: 5px; background-color: #ffffff; color: #202020; border: 2px solid #b84a37; }
+        .event-item a { color: #1c2807; text-decoration: none; font-weight: bold; }
+        .event-item a:hover { text-decoration: underline; }
+        .hidden { display: none; }
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-weight: bold; margin-bottom: 5px; }
+        .weekday { padding: 5px; background-color: #d8d8d8; }
+        .view-more-btn { display: block; margin: 20px auto; padding: 10px 20px; background-color: #2b2b2b; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .view-more-btn:hover { background-color: #000000; }
 
-    .calendar-container {
-            display: flex;
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 100px;
-            gap: 35px;
+        button { background-color: #1f1f1f; color: #f0f0f0; border: 2px solid #444; border-radius: 8px; padding: 10px 20px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s; position: relative; overflow: hidden; }
+        button::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(120deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)); transition: left 0.4s; z-index: 1; }
+        button:hover::before { left: 100%; }
+        button:hover { background-color: #333; box-shadow: 0 0 10px #666; transform: scale(1.05); }
+        button:active { background-color: #555; box-shadow: 0 0 5px #444 inset; transform: scale(0.95); }
+
+        #monthYear { font-size: 18px; font-weight: bold; padding: 0 15px; color: #d0d0d0; text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); transition: color 0.3s, text-shadow 0.3s; }
+        #monthYear:hover { color: #f0f0f0; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8); }
+
+        @media screen and (max-width: 768px) {
+            .calendar { width: 100%; padding: 20px; border-radius: 10px; margin-bottom: 10px; }
+            .events { width: 100%; padding: 20px; border-radius: 10px; height: 200px; margin-bottom: 80px; }
+            .calendar-container { flex-direction: column; }
+            .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+            .nothing { height: 100px; }
         }
-
-        .calendar {
-            width: 50%;
-            padding: 20px;
-            background-color: rgb(255, 255, 255);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            color: #1f1f1f;
-            margin-bottom: 100px;
-
-        }
-
-        .events {
-            width: 50%;
-            padding: 20px;
-            background-color: rgb(255, 255, 255);
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 100px;
-
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            text-align: center;
-        }
-
-        .calendar-day {
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .calendar-day:hover {
-            background-color: #f8f8f8;
-
-        }
-
-        .highlight {
-            border: 2px solid #b84a37;
-
-        }
-        
-        .events h2 {
-            color: #2b2b2b;
-        }
-
-        .event-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .event-item {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            background-color: #ffffff;
-            color: #202020;
-            border: 2px solid #b84a37;
-
-        }
-
-        .event-item a {
-            color: #1c2807;
-            text-decoration: none;
-            font-weight: bold;
-
-        }
-
-        .event-item a:hover {
-            text-decoration: underline;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .weekday {
-            padding: 5px;
-            background-color: #d8d8d8;
-        }
-        .view-more-btn {
-        display: block;
-        margin: 20px auto;
-        padding: 10px 20px;
-        background-color: #2b2b2b;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .view-more-btn:hover {
-        background-color: #000000;
-    }
-
-
-
-/* 按鈕樣式 */
-button {
-    background-color: #1f1f1f;
-    color: #f0f0f0;
-    border: 2px solid #444;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
-}
-
-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
-    transition: left 0.4s;
-    z-index: 1;
-}
-
-button:hover::before {
-    left: 100%;
-}
-
-button:hover {
-    background-color: #333;
-    box-shadow: 0 0 10px #666;
-    transform: scale(1.05);
-}
-
-button:active {
-    background-color: #555;
-    box-shadow: 0 0 5px #444 inset;
-    transform: scale(0.95);
-}
-
-/* 月份與年份文字樣式 */
-#monthYear {
-    font-size: 18px;
-    font-weight: bold;
-    padding: 0 15px;
-    color: #d0d0d0;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-    transition: color 0.3s, text-shadow 0.3s;
-}
-
-#monthYear:hover {
-    color: #f0f0f0;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-}
-
-@media screen and (max-width: 768px) {
-    .calendar {
-            width: 100%;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-
-        }
-
-        .events {
-            width: 100%;
-            padding: 20px;
-            border-radius: 10px;
-            height: 200px;
-            margin-bottom: 80px;
-
-        }
-
-        
-        .calendar-container {
-        flex-direction: column;
-    }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .nothing {
-
-            height: 100px;
-        }
-}
     </style>
 </head>
 
@@ -454,19 +96,13 @@ button:active {
                 <img src="elected.png" alt="Logo">
                 <div class="site-name"></div>
             </div>
-            <ul class="nav-links" id="mobile-nav">
-                <!-- 動態加載的導航項目將插入此處 -->
-            </ul>
+            <ul class="nav-links" id="mobile-nav"></ul>
         </nav>
 
         <div class="main-content">
             <!-- 桌面版導航欄 -->
             <div class="navbar">
-                <ul class="nav-options" id="nav-container">
-                    <!-- 動態加載的導航項目將插入此處 -->
-                </ul>
-
-
+                <ul class="nav-options" id="nav-container"></ul>
             </div>
 
             <div class="form-container">
@@ -475,16 +111,13 @@ button:active {
                 </div>
             </div>
 
-               
-
             <div class="announcements slide-up">
                 <div id="announcements-list">
                     <!-- 公告內容將自動載入 -->
                 </div>
                 <button id="view-more" class="view-more-btn">查看更多</button>
             </div>
-                <!-- 更新時間將顯示在這裡 -->
-            </div>
+
             <div class="calendar-container">
                 <!-- Calendar Section -->
                 <div class="calendar">
@@ -519,257 +152,258 @@ button:active {
 
             <div class="footer">
                 <div class="footer-content">
-                    <ul class="footer-links" id="footer-links">
-                        <!-- 動態加載的底部鏈接將插入此處 -->
-                    </ul>
-                    <div class="footer-info">
-                        2025 東吳大學選舉事務委員會
-                    </div>
+                    <ul class="footer-links" id="footer-links"></ul>
+                    <div class="footer-info">2025 東吳大學選舉事務委員會</div>
                 </div>
             </div>
         </div>
-
     </div>
-
-
 
     <!-- JavaScript -->
     <script src="sa_election.js"></script>
     <script src="sa0.js"></script>
 
     <script>
-        // 當文檔加載完成後的事件
-        document.addEventListener('DOMContentLoaded', function() {
-            loadAnnouncements(); // 載入公告
-        });
-
-        function loadAnnouncements() {
-    const sheetId = '1gqn49ZfKbBaqwe-D5VqrBJ0n37AiVK1VHp_e-DlAiNo'; // 試算表 ID
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
-
-    fetch(url)
-    .then(response => response.ok ? response.text() : Promise.reject('Network response was not ok'))
-    .then(data => {
-        const rows = data.split('\n').slice(1); // 分割行並移除標題行
-        const announcementList = document.getElementById('announcements-list');
-        announcementList.innerHTML = ''; // 清空公告欄
-
-        // 只顯示前三筆公告
-        rows.slice(0, 3).forEach((row, index) => {
-            const columns = row.split(',').map(col => col.replace(/"/g, '').trim());
-            const newAnnouncement = document.createElement('div');
-            newAnnouncement.classList.add('announcement');
-            
-            // 創建唯一ID用於識別每個公告
-            const announcementId = `announcement-${index}`;
-            const iframeId = `iframe-${index}`;
-
-            // 提取Google Drive文件ID
-            let driveFileId = columns[2];
-            // 檢查是否是Google Drive連結，並提取文件ID
-            if (driveFileId.includes('drive.google.com')) {
-                // 從URL中提取文件ID
-                const match = driveFileId.match(/[-\w]{25,}/);
-                if (match) {
-                    driveFileId = match[0];
-                }
-            }
-
-            // 假設第一列是標題，第二列是訊息，第三列是超連結
-            newAnnouncement.innerHTML = `
-                <h2 class="title"><a href="${columns[2]}" class="link" target="_blank">${columns[0]}</a></h2>
-                <p class="message">${columns[1]}</p>
-                <div class="announcement-footer">
-                    <p class="updateTime">發文時間：${columns[3]}</p>
-                    <button class="detail-btn" data-file-id="${driveFileId}" data-target="${iframeId}">詳</button>
-                </div>
-                <div class="iframe-container" id="${iframeId}" style="display: none; width: 100%; margin-top: 10px;"></div>
-            `;
-            
-            announcementList.appendChild(newAnnouncement);
-        });
+    // 總管頁面載入完成後的初始化事件
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAnnouncements(); 
+        loadEvents();
+        loadForms();
         
-        // 為所有"詳"按鈕添加點擊事件
-        document.querySelectorAll('.detail-btn').forEach(button => {
-            button.addEventListener('click', function() {
-    const fileId = this.getAttribute('data-file-id');
-    const targetId = this.getAttribute('data-target');
-    const container = document.getElementById(targetId);
+        // 監聽視窗大小變化，重新調整表單布局
+        window.addEventListener('resize', adjustLayout);
 
-    // 對應的原始連結
-    const originalLink = this.closest('.announcement').querySelector('.link').href;
-
-    // 檢查是否為 Google Drive PDF 分享連結
-    const isGoogleDrivePDF = /https:\/\/drive\.google\.com\/.*\/d\/[-\w]{25,}/.test(originalLink) || /https:\/\/drive\.google\.com\/file\/d\/[-\w]{25,}/.test(originalLink);
-
-    if (!isGoogleDrivePDF) {
-        window.open(originalLink, '_blank');
-        return;
-    }
-
-    // 切換iframe的顯示狀態
-    if (container.style.display === 'none') {
-        container.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" width="100%" height="500px" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
-        container.style.display = 'block';
-    } else {
-        container.style.display = 'none';
-        container.innerHTML = '';
-    }
-});
-
+        // 查看更多按鈕跳轉
+        document.getElementById('view-more').addEventListener('click', () => {
+            window.location.href = 'scuseca.html'; 
         });
-    })
-    .catch(error => {
-        console.error('Error loading announcements:', error);
-        alert('無法載入公告，請查看控制台獲取更多資訊。');
-    });
-}
 
-    document.getElementById('view-more').addEventListener('click', () => {
-        window.location.href = 'saa.html'; // 替換為實際的目標網址
-    });
-
-    document.addEventListener('DOMContentLoaded', loadAnnouncements);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdownParent = document.querySelector('.dropdown-parent');
+        // 下拉選單邏輯
+        const dropdownParent = document.querySelector('.dropdown-parent');
+        if(dropdownParent) {
             const dropdownToggle = dropdownParent.querySelector('.dropdown-toggle');
-            const dropdownContent = dropdownParent.querySelector('.dropdown-content');
-            
             dropdownToggle.addEventListener('click', function() {
                 dropdownParent.classList.toggle('active');
             });
-        });
+        }
 
-
-    document.getElementById('view-more').addEventListener('click', () => {
-        window.location.href = 'scuseca.html'; // 替換為實際的目標網址
-    });
-
-    document.addEventListener('DOMContentLoaded', loadAnnouncements);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdownParent = document.querySelector('.dropdown-parent');
-            const dropdownToggle = dropdownParent.querySelector('.dropdown-toggle');
-            const dropdownContent = dropdownParent.querySelector('.dropdown-content');
-            
-            dropdownToggle.addEventListener('click', function() {
-                dropdownParent.classList.toggle('active');
-            });
-        });
-
-                // 當文檔滑入視窗時，添加 'show' 類別以觸發動畫
-                const observer = new IntersectionObserver((entries) => {
+        // 觀察者模式：當滑入視窗時觸發 slide-up 動畫
+        const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('show');
                 }
             });
         });
-
-        // 監視所有具有 slide-up 類別的元素
         document.querySelectorAll('.slide-up').forEach(element => {
             observer.observe(element);
         });
+    });
 
-        const sheetId = '1r4WC3P2OPuamjoz3vSximkd2qi43FHoyQlhbInSHOv4'; // Your Google Sheets ID
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+    // ==================
+    // 1. 載入公告功能 (加入防呆與30秒逾時檢查)
+    // ==================
+    function loadAnnouncements() {
+        const sheetId = '1gqn49ZfKbBaqwe-D5VqrBJ0n37AiVK1VHp_e-DlAiNo'; 
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
 
+        let isSuccess = false;
+        const errorAlertTimeout = setTimeout(() => {
+            if (!isSuccess) alert('已持續 30 秒無法載入公告，請確認網路連線或稍後再重新整理頁面。');
+        }, 30000);
+
+        const controller = new AbortController();
+        const fetchTimeout = setTimeout(() => controller.abort(), 30000);
+
+        fetch(url, { signal: controller.signal })
+        .then(response => {
+            clearTimeout(fetchTimeout);
+            return response.ok ? response.text() : Promise.reject('Network response was not ok');
+        })
+        .then(data => {
+            isSuccess = true;
+            clearTimeout(errorAlertTimeout);
+
+            // 過濾空白行
+            const rows = data.split('\n').slice(1).filter(row => row.trim() !== '');
+            const announcementList = document.getElementById('announcements-list');
+            announcementList.innerHTML = ''; 
+
+            // 只顯示前三筆公告
+            rows.slice(0, 3).forEach((row, index) => {
+                const columns = row.split(',').map(col => col.replace(/"/g, '').trim());
+                
+                // 防呆預設值
+                const title = columns[0] || '無標題';
+                const message = columns[1] || '';
+                const link = columns[2] || '';
+                const date = columns[3] || '';
+
+                const newAnnouncement = document.createElement('div');
+                newAnnouncement.classList.add('announcement');
+                const iframeId = `iframe-${index}`;
+
+                let driveFileId = link;
+                if (driveFileId && driveFileId.includes('drive.google.com')) {
+                    const match = driveFileId.match(/[-\w]{25,}/);
+                    if (match) driveFileId = match[0];
+                }
+
+                newAnnouncement.innerHTML = `
+                    <h2 class="title"><a href="${link}" class="link" target="_blank">${title}</a></h2>
+                    <p class="message">${message}</p>
+                    <div class="announcement-footer">
+                        <p class="updateTime">發文時間：${date}</p>
+                        <button class="detail-btn" data-file-id="${driveFileId}" data-target="${iframeId}">詳</button>
+                    </div>
+                    <div class="iframe-container" id="${iframeId}" style="display: none; width: 100%; margin-top: 10px;"></div>
+                `;
+                announcementList.appendChild(newAnnouncement);
+            });
+            
+            document.querySelectorAll('.detail-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const fileId = this.getAttribute('data-file-id');
+                    const targetId = this.getAttribute('data-target');
+                    const container = document.getElementById(targetId);
+                    const originalLink = this.closest('.announcement').querySelector('.link').href;
+
+                    const isGoogleDrivePDF = /https:\/\/drive\.google\.com\/.*\/d\/[-\w]{25,}/.test(originalLink) || /https:\/\/drive\.google\.com\/file\/d\/[-\w]{25,}/.test(originalLink);
+
+                    if (!isGoogleDrivePDF) {
+                        if(originalLink && originalLink !== window.location.href) {
+                            window.open(originalLink, '_blank');
+                        } else {
+                            alert("此公告沒有提供詳細文件連結。");
+                        }
+                        return;
+                    }
+
+                    if (container.style.display === 'none') {
+                        container.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" width="100%" height="500px" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
+                        container.style.display = 'block';
+                    } else {
+                        container.style.display = 'none';
+                        container.innerHTML = '';
+                    }
+                });
+            });
+        })
+        .catch(error => {
+            if (error.name === 'AbortError') console.error('公告連線逾時 (超過30秒)');
+            else console.error('Error loading announcements:', error);
+        });
+    }
+
+
+    // ==================
+    // 2. 載入行事曆功能 (加入防呆與30秒逾時檢查)
+    // ==================
     let currentMonth = new Date().getMonth();
     let currentYear = new Date().getFullYear();
     let eventsData = {};
 
-    // Load events from Google Sheets
     function loadEvents() {
-    fetch(url)
-        .then(response => response.ok ? response.text() : Promise.reject('Network response was not ok'))
-        .then(data => {
-            const rows = data.split('\n').slice(1); // 移除標題列並獲取資料
-            eventsData = {};  // 重設 eventsData
+        const sheetId = '1r4WC3P2OPuamjoz3vSximkd2qi43FHoyQlhbInSHOv4'; 
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
 
-            rows.forEach(row => {
-                const [event, date, link, location, time] = row.split(',').map(col => col.replace(/"/g, '').trim());
-                if (event && date) {
-                    const eventDate = new Date(date);
-                    const key = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
-                    if (!eventsData[key]) eventsData[key] = [];
-                    eventsData[key].push({ event, link, location, time });
-                }
+        let isSuccess = false;
+        const errorAlertTimeout = setTimeout(() => {
+            if (!isSuccess) alert('已持續 30 秒無法載入行事曆資料，請確認網路連線。');
+        }, 30000);
+
+        const controller = new AbortController();
+        const fetchTimeout = setTimeout(() => controller.abort(), 30000);
+
+        fetch(url, { signal: controller.signal })
+            .then(response => {
+                clearTimeout(fetchTimeout);
+                return response.ok ? response.text() : Promise.reject('Network response was not ok');
+            })
+            .then(data => {
+                isSuccess = true;
+                clearTimeout(errorAlertTimeout);
+
+                // 過濾空白行防呆
+                const rows = data.split('\n').slice(1).filter(row => row.trim() !== '');
+                eventsData = {}; 
+
+                rows.forEach(row => {
+                    const columns = row.split(',').map(col => col.replace(/"/g, '').trim());
+                    const event = columns[0];
+                    const date = columns[1];
+                    const link = columns[2] || '#';
+                    const location = columns[3] || '無地點資料';
+                    const time = columns[4] || '無時間資料';
+
+                    if (event && date) {
+                        const eventDate = new Date(date);
+                        const key = `${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate()}`;
+                        if (!eventsData[key]) eventsData[key] = [];
+                        eventsData[key].push({ event, link, location, time });
+                    }
+                });
+                renderCalendar();
+            })
+            .catch(error => {
+                if (error.name === 'AbortError') console.error('行事曆連線逾時 (超過30秒)');
+                else console.error('Error loading events:', error);
             });
-            renderCalendar();
-        })
-        .catch(error => console.error('Error loading events:', error));
-}
-
-
-    // Render calendar for the current month
-    function renderCalendar() {
-    const daysContainer = document.querySelector('.calendar-days');
-    const monthYearElement = document.getElementById('monthYear');
-    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-
-    monthYearElement.textContent = `${firstDayOfMonth.toLocaleString('zh-TW', { month: 'long' })} ${currentYear}`;
-
-    // 清空之前的內容
-    daysContainer.innerHTML = '';
-
-    // 添加空白的前置格
-    for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
-        const emptyCell = document.createElement('div');
-        daysContainer.appendChild(emptyCell);
     }
 
-    // 添加日期格
-    for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
-        const dayCell = document.createElement('div');
-        const dateKey = `${currentYear}-${currentMonth}-${day}`;
-        dayCell.classList.add('calendar-day');
-        dayCell.textContent = day;
+    function renderCalendar() {
+        const daysContainer = document.querySelector('.calendar-days');
+        const monthYearElement = document.getElementById('monthYear');
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+        const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
 
-        // 標註有行程的日期
-        if (eventsData[dateKey]) {
-            dayCell.classList.add('highlight');
+        monthYearElement.textContent = `${firstDayOfMonth.toLocaleString('zh-TW', { month: 'long' })} ${currentYear}`;
+        daysContainer.innerHTML = '';
+
+        for (let i = 0; i < firstDayOfMonth.getDay(); i++) {
+            const emptyCell = document.createElement('div');
+            daysContainer.appendChild(emptyCell);
         }
 
-        // 所有日期都添加點擊事件
-        dayCell.addEventListener('click', () => showEvents(dateKey));
+        for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+            const dayCell = document.createElement('div');
+            const dateKey = `${currentYear}-${currentMonth}-${day}`;
+            dayCell.classList.add('calendar-day');
+            dayCell.textContent = day;
 
-        daysContainer.appendChild(dayCell);
+            if (eventsData[dateKey]) {
+                dayCell.classList.add('highlight');
+            }
+
+            dayCell.addEventListener('click', () => showEvents(dateKey));
+            daysContainer.appendChild(dayCell);
+        }
     }
-}
 
-
-    // Show events for a specific date
     function showEvents(dateKey) {
-    const eventsList = document.getElementById('eventsList');
-    eventsList.innerHTML = ''; // 確保清空內容
+        const eventsList = document.getElementById('eventsList');
+        eventsList.innerHTML = ''; 
 
-    const eventsForDate = eventsData[dateKey] || []; // 取得該日期的行程
+        const eventsForDate = eventsData[dateKey] || []; 
 
-    if (eventsForDate.length === 0) {
-        // 如果沒有行程，顯示「沒有行程」
-        const noEventMessage = document.createElement('p');
-        noEventMessage.textContent = '沒有行程';
-        eventsList.appendChild(noEventMessage);
-    } else {
-        // 如果有行程，顯示所有行程資訊
-        eventsForDate.forEach(event => {
-            const eventItem = document.createElement('div');
-            eventItem.classList.add('event-item');
-            eventItem.innerHTML = `
-                <p><strong>活動名稱：</strong><a href="${event.link}" target="_blank">${event.event}</a></p>
-                <p><strong>地點：</strong>${event.location || '無地點資料'}</p>
-                <p><strong>時間：</strong>${event.time || '無時間資料'}</p>
-            `;
-            eventsList.appendChild(eventItem);
-        });
+        if (eventsForDate.length === 0) {
+            const noEventMessage = document.createElement('p');
+            noEventMessage.textContent = '沒有行程';
+            eventsList.appendChild(noEventMessage);
+        } else {
+            eventsForDate.forEach(event => {
+                const eventItem = document.createElement('div');
+                eventItem.classList.add('event-item');
+                eventItem.innerHTML = `
+                    <p><strong>活動名稱：</strong><a href="${event.link}" target="_blank">${event.event}</a></p>
+                    <p><strong>地點：</strong>${event.location}</p>
+                    <p><strong>時間：</strong>${event.time}</p>
+                `;
+                eventsList.appendChild(eventItem);
+            });
+        }
     }
-}
 
-
-
-    // Navigate to the previous month
     document.getElementById('prevMonth').addEventListener('click', () => {
         currentMonth--;
         if (currentMonth < 0) {
@@ -779,7 +413,6 @@ button:active {
         loadEvents();
     });
 
-    // Navigate to the next month
     document.getElementById('nextMonth').addEventListener('click', () => {
         currentMonth++;
         if (currentMonth > 11) {
@@ -789,254 +422,221 @@ button:active {
         loadEvents();
     });
 
-    // Initialize the page
-    loadEvents();
 
+    // ==================
+    // 3. 載入表單功能 (加入防呆與30秒逾時檢查)
+    // ==================
+    function loadForms() {
+        const sheetId = '1f7rgg-Ti1hwpQd7Y7RfoKcGwpdPLS2UEHAJEcWB97qA';
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
 
+        let isSuccess = false;
+        const errorAlertTimeout = setTimeout(() => {
+            if (!isSuccess) alert('已持續 30 秒無法載入選舉表單，請確認網路連線。');
+        }, 30000);
 
+        const controller = new AbortController();
+        const fetchTimeout = setTimeout(() => controller.abort(), 30000);
 
+        fetch(url, { signal: controller.signal })
+            .then(response => {
+                clearTimeout(fetchTimeout);
+                return response.ok ? response.text() : Promise.reject('Network response was not ok');
+            })
+            .then(data => {
+                isSuccess = true;
+                clearTimeout(errorAlertTimeout);
 
+                // 過濾空白行
+                const rows = data.split('\n').slice(1).filter(row => row.trim() !== ''); 
+                const formsArea = document.getElementById('formsArea');
+                formsArea.innerHTML = ''; 
+                
+                const activeForms = rows.filter(row => {
+                    const columns = parseCSVRow(row);
+                    return columns.length >= 5 && columns[4] && columns[4].trim().toLowerCase() === '是';
+                });
 
+                if (activeForms.length === 0) {
+                    formsArea.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            <p>目前沒有選舉進行中</p>
+                        </div>
+                    `;
+                    return;
+                }
 
-
-
-
-    
-
-
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-    loadForms();
-    
-    // 監聽窗口大小變化，重新調整布局
-    window.addEventListener('resize', adjustLayout);
-});
-
-function loadForms() {
-    const sheetId = '1f7rgg-Ti1hwpQd7Y7RfoKcGwpdPLS2UEHAJEcWB97qA';
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
-
-    fetch(url)
-        .then(response => response.ok ? response.text() : Promise.reject('Network response was not ok'))
-        .then(data => {
-            const rows = data.split('\n').slice(1); // 分割行並移除標題行
-            const formsArea = document.getElementById('formsArea');
-            formsArea.innerHTML = ''; // 清空載入訊息
-            
-            // 過濾出開啟中的表單
-            const activeForms = rows.filter(row => {
-                const columns = parseCSVRow(row);
-                return columns.length >= 5 && columns[4].trim().toLowerCase() === '是';
-            });
-
-            if (activeForms.length === 0) {
-                // 顯示沒有表單的狀態
-                formsArea.innerHTML = `
+                const formsGrid = document.createElement('div');
+                formsGrid.classList.add('forms-grid');
+                formsGrid.id = 'forms-grid';
+                
+                activeForms.forEach(row => {
+                    const columns = parseCSVRow(row);
+                    const formName = columns[0] || '未命名表單';
+                    const deadline = columns[1] || '';
+                    const eligibility = columns[2] || '';
+                    const formLink = columns[3] || '#';
+                    const registrationCount = columns.length > 5 ? columns[5] : ''; 
+                    
+                    const formCard = createFormCard(formName, deadline, eligibility, formLink, registrationCount);
+                    formsGrid.appendChild(formCard);
+                });
+                
+                formsArea.appendChild(formsGrid);
+                adjustLayout();
+                startCountdowns();
+            })
+            .catch(error => {
+                if (error.name === 'AbortError') console.error('表單連線逾時 (超過30秒)');
+                else console.error('Error loading forms:', error);
+                
+                document.getElementById('formsArea').innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">📋</div>
-                        <p>目前沒有選舉進行中</p>
+                        <div class="empty-icon">⚠️</div>
+                        <p>載入表單資料時發生錯誤，請稍後再試</p>
                     </div>
                 `;
-                return;
-            }
-
-            // 創建表單網格
-            const formsGrid = document.createElement('div');
-            formsGrid.classList.add('forms-grid');
-            formsGrid.id = 'forms-grid';
-            
-            activeForms.forEach(row => {
-                const columns = parseCSVRow(row);
-                const formName = columns[0] || '';
-                const deadline = columns[1] || '';
-                const eligibility = columns[2] || '';
-                const formLink = columns[3] || '';
-                const registrationCount = columns.length > 5 ? columns[5] : ''; // F欄目前報名組數
-                
-                // 創建表單卡片
-                const formCard = createFormCard(formName, deadline, eligibility, formLink, registrationCount);
-                formsGrid.appendChild(formCard);
             });
-            
-            formsArea.appendChild(formsGrid);
-            
-            // 根據窗口大小和項目數量調整布局
-            adjustLayout();
-            
-            // 啟動倒數計時器
-            startCountdowns();
-        })
-        .catch(error => {
-            console.error('Error loading forms:', error);
-            document.getElementById('formsArea').innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">⚠️</div>
-                    <p>載入表單資料時發生錯誤</p>
+    }
+
+    function adjustLayout() {
+        const formsGrid = document.getElementById('forms-grid');
+        if (!formsGrid) return;
+        
+        const windowWidth = window.innerWidth;
+        const itemCount = formsGrid.children.length;
+        
+        if (windowWidth <= 600) {
+            formsGrid.style.gridTemplateColumns = "1fr";
+        } else {
+            if (itemCount === 1) {
+                formsGrid.style.gridTemplateColumns = "1fr";
+                formsGrid.style.maxWidth = "400px";
+                formsGrid.style.margin = "0 auto";
+            } else if (itemCount === 2) {
+                formsGrid.style.gridTemplateColumns = "1fr 1fr";
+                formsGrid.style.maxWidth = "800px";
+                formsGrid.style.margin = "0 auto";
+            } else {
+                formsGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
+                formsGrid.style.maxWidth = "100%";
+                formsGrid.style.margin = "0";
+            }
+        }
+    }
+
+    function parseCSVRow(row) {
+        const result = [];
+        let inQuotes = false;
+        let currentValue = '';
+        
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(currentValue.trim());
+                currentValue = '';
+            } else {
+                currentValue += char;
+            }
+        }
+        result.push(currentValue.trim());
+        
+        return result.map(value => {
+            if (value.startsWith('"') && value.endsWith('"')) {
+                return value.substring(1, value.length - 1);
+            }
+            return value;
+        });
+    }
+
+    function createFormCard(formName, deadline, eligibility, formLink, registrationCount) {
+        const card = document.createElement('div');
+        card.classList.add('form-card');
+        
+        let headerContent = `
+            <div class="form-header">
+                <h2 class="form-title">${formName}</h2>
+            </div>
+        `;
+        
+        let contentHtml = '<div class="form-content">';
+        
+        if (deadline && deadline.trim() !== '') {
+            contentHtml += `
+                <div class="deadline">
+                    <span class="deadline-icon"></span>
+                    報名截止日：${deadline}
+                </div>
+                <div class="countdown" data-deadline="${deadline}">
+                    計算剩餘時間中...
                 </div>
             `;
-        });
-}
-
-function adjustLayout() {
-    const formsGrid = document.getElementById('forms-grid');
-    if (!formsGrid) return;
-    
-    const windowWidth = window.innerWidth;
-    const itemCount = formsGrid.children.length;
-    
-    // 根據窗口寬度設置布局
-    if (windowWidth <= 600) {
-        // 手機版：一排一個
-        formsGrid.style.gridTemplateColumns = "1fr";
-    } else {
-        // 電腦版：處理少於三筆的情況，使其居中
-        if (itemCount === 1) {
-            formsGrid.style.gridTemplateColumns = "1fr";
-            formsGrid.style.maxWidth = "400px";
-            formsGrid.style.margin = "0 auto";
-        } else if (itemCount === 2) {
-            formsGrid.style.gridTemplateColumns = "1fr 1fr";
-            formsGrid.style.maxWidth = "800px";
-            formsGrid.style.margin = "0 auto";
-        } else {
-            // 三筆或更多維持原本的布局
-            formsGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
-            formsGrid.style.maxWidth = "100%";
-            formsGrid.style.margin = "0";
         }
-    }
-}
-
-function parseCSVRow(row) {
-    const result = [];
-    let inQuotes = false;
-    let currentValue = '';
-    
-    for (let i = 0; i < row.length; i++) {
-        const char = row[i];
         
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(currentValue.trim());
-            currentValue = '';
-        } else {
-            currentValue += char;
+        if (eligibility && eligibility.trim() !== '') {
+            contentHtml += `
+                <div class="eligibility form-detail">
+                    <strong>報名資格：</strong>${eligibility}
+                </div>
+            `;
         }
-    }
-    
-    // 添加最後一個值
-    result.push(currentValue.trim());
-    
-    return result.map(value => {
-        // 移除包裹的引號
-        if (value.startsWith('"') && value.endsWith('"')) {
-            return value.substring(1, value.length - 1);
-        }
-        return value;
-    });
-}
-
-function createFormCard(formName, deadline, eligibility, formLink, registrationCount) {
-    const card = document.createElement('div');
-    card.classList.add('form-card');
-    
-    // 準備標題區
-    let headerContent = `
-        <div class="form-header">
-            <h2 class="form-title">${formName}</h2>
-        </div>
-    `;
-    
-    // 準備內容區，根據資料是否為空來決定是否顯示對應的區塊
-    let contentHtml = '<div class="form-content">';
-    
-    // 只有當截止日期存在時才顯示
-    if (deadline && deadline.trim() !== '') {
-        contentHtml += `
-            <div class="deadline">
-                <span class="deadline-icon"></span>
-                報名截止日：${deadline}
-            </div>
-            <div class="countdown" data-deadline="${deadline}">
-                計算剩餘時間中...
-            </div>
-        `;
-    }
-    
-    // 只有當資格摘要存在時才顯示
-    if (eligibility && eligibility.trim() !== '') {
-        contentHtml += `
-            <div class="eligibility form-detail">
-                <strong>報名資格：</strong>${eligibility}
-            </div>
-        `;
-    }
-    
-    // 只有當目前報名組數存在時才顯示
-    if (registrationCount && registrationCount.trim() !== '') {
-        contentHtml += `
-            <div class="registration-count form-detail">
-                <strong>目前報名組數：</strong><h2>${registrationCount}</h2>
-            </div>
-        `;
-    }
-    
-    // 加入報名按鈕
-    contentHtml += `
-        <a href="${formLink}" target="_blank" class="form-button">立即報名</a>
-    </div>`;
-    
-    card.innerHTML = headerContent + contentHtml;
-    
-    return card;
-}
-
-function startCountdowns() {
-    const countdownElements = document.querySelectorAll('.countdown');
-    
-    countdownElements.forEach(element => {
-        const deadline = element.getAttribute('data-deadline');
-        updateCountdown(element, deadline);
         
-        // 每小時更新一次倒數
-        setInterval(() => {
+        if (registrationCount && registrationCount.trim() !== '') {
+            contentHtml += `
+                <div class="registration-count form-detail">
+                    <strong>目前報名組數：</strong><h2>${registrationCount}</h2>
+                </div>
+            `;
+        }
+        
+        contentHtml += `
+            <a href="${formLink}" target="_blank" class="form-button">立即報名</a>
+        </div>`;
+        
+        card.innerHTML = headerContent + contentHtml;
+        return card;
+    }
+
+    function startCountdowns() {
+        const countdownElements = document.querySelectorAll('.countdown');
+        countdownElements.forEach(element => {
+            const deadline = element.getAttribute('data-deadline');
             updateCountdown(element, deadline);
-        }, 1000 * 60 * 60); // 每小時更新
-    });
-}
+            setInterval(() => {
+                updateCountdown(element, deadline);
+            }, 1000 * 60 * 60); 
+        });
+    }
 
-function updateCountdown(element, deadlineStr) {
-    // 解析截止日期 (假設格式為 YYYY-MM-DD 或 YYYY/MM/DD)
-    const deadlineParts = deadlineStr.split(/[-\/]/);
-    
-    if (deadlineParts.length !== 3) {
-        element.textContent = '日期格式錯誤';
-        return;
+    function updateCountdown(element, deadlineStr) {
+        const deadlineParts = deadlineStr.split(/[-\/]/);
+        if (deadlineParts.length !== 3) {
+            element.textContent = '日期格式錯誤';
+            return;
+        }
+        const year = parseInt(deadlineParts[0], 10);
+        const month = parseInt(deadlineParts[1], 10) - 1; 
+        const day = parseInt(deadlineParts[2], 10);
+        
+        const deadlineDate = new Date(year, month, day, 23, 59, 59);
+        const currentDate = new Date();
+        
+        const timeDifference = deadlineDate.getTime() - currentDate.getTime();
+        const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+        
+        if (daysRemaining < 0) {
+            element.textContent = '報名已截止';
+            element.style.color = '#9e9e9e';
+        } else if (daysRemaining === 0) {
+            element.textContent = '今天截止！';
+            element.style.color = '#f44336';
+        } else {
+            element.textContent = `距離截止還剩 ${daysRemaining} 天`;
+        }
     }
-    
-    const year = parseInt(deadlineParts[0], 10);
-    const month = parseInt(deadlineParts[1], 10) - 1; // 月份從0開始
-    const day = parseInt(deadlineParts[2], 10);
-    
-    const deadlineDate = new Date(year, month, day, 23, 59, 59);
-    const currentDate = new Date();
-    
-    // 計算剩餘天數
-    const timeDifference = deadlineDate.getTime() - currentDate.getTime();
-    const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-    
-    if (daysRemaining < 0) {
-        element.textContent = '報名已截止';
-        element.style.color = '#9e9e9e';
-    } else if (daysRemaining === 0) {
-        element.textContent = '今天截止！';
-        element.style.color = '#f44336';
-    } else {
-        element.textContent = `距離截止還剩 ${daysRemaining} 天`;
-    }
-}
     </script>
 
 </body>
