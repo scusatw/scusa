@@ -65,14 +65,11 @@
                 </ul>
             </div>
 
-
-            
             <div class="announcements">
                 <div id="announcements-list">
                     <!-- 公告內容將自動載入 -->
                 </div>
             </div>
-
 
             <!-- 浮動球 -->
             <div id="ball-container">
@@ -93,99 +90,135 @@
 
     </div>
 
-
-
     <!-- JavaScript -->
     <script src="sa_election.js"></script>
     <script src="sa0.js"></script>
 
     <script>
- function loadAnnouncements() {
-    const sheetId = '1gqn49ZfKbBaqwe-D5VqrBJ0n37AiVK1VHp_e-DlAiNo'; // 試算表 ID
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+    function loadAnnouncements() {
+        const sheetId = '1gqn49ZfKbBaqwe-D5VqrBJ0n37AiVK1VHp_e-DlAiNo'; // 試算表 ID
+        const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
 
-    fetch(url)
-    .then(response => response.ok ? response.text() : Promise.reject('Network response was not ok'))
-    .then(data => {
-        const rows = data.split('\n').slice(1); // 分割行並移除標題行
-        const announcementList = document.getElementById('announcements-list');
-        announcementList.innerHTML = ''; // 清空公告欄
+        let isSuccess = false; // 紀錄是否成功載入
 
-        // 顯示全部公告
-        rows.forEach((row, index) => {
-            const columns = row.split(',').map(col => col.replace(/"/g, '').trim());
-            const newAnnouncement = document.createElement('div');
-            newAnnouncement.classList.add('announcement');
-            
-            // 創建唯一ID用於識別每個公告
-            const announcementId = `announcement-${index}`;
-            const iframeId = `iframe-${index}`;
-
-            // 提取Google Drive文件ID
-            let driveFileId = columns[2];
-            // 檢查是否是Google Drive連結，並提取文件ID
-            if (driveFileId.includes('drive.google.com')) {
-                // 從URL中提取文件ID
-                const match = driveFileId.match(/[-\w]{25,}/);
-                if (match) {
-                    driveFileId = match[0];
-                }
+        // 1. 設定 30 秒後檢查，如果還是沒成功載入才跳出警告
+        const errorAlertTimeout = setTimeout(() => {
+            if (!isSuccess) {
+                alert('已持續 30 秒無法載入公告，請確認網路連線或稍後再重新整理頁面。');
             }
+        }, 30000); // 30000 毫秒 = 30 秒
 
-            // 假設第一列是標題，第二列是訊息，第三列是超連結
-            newAnnouncement.innerHTML = `
-                <h2 class="title"><a href="${columns[2]}" class="link" target="_blank">${columns[0]}</a></h2>
-                <p class="message">${columns[1]}</p>
-                <div class="announcement-footer">
-                    <p class="updateTime">發文時間：${columns[3]}</p>
-                    <button class="detail-btn" data-file-id="${driveFileId}" data-target="${iframeId}">詳</button>
-                </div>
-                <div class="iframe-container" id="${iframeId}" style="display: none; width: 100%; margin-top: 10px;"></div>
-            `;
+        // 2. 設定 AbortController 來中斷超過 30 秒的網路請求
+        const controller = new AbortController();
+        const fetchTimeout = setTimeout(() => controller.abort(), 30000);
+
+        // 發送請求，並帶入 controller 監聽
+        fetch(url, { signal: controller.signal })
+        .then(response => {
+            clearTimeout(fetchTimeout); // 伺服器有正常回應，取消請求中斷計時器
+            return response.ok ? response.text() : Promise.reject('Network response was not ok');
+        })
+        .then(data => {
+            isSuccess = true; // 標記為成功
+            clearTimeout(errorAlertTimeout); // 成功載入，取消 30 秒後的彈窗警告
+
+            // 分割行並移除標題行，同時過濾掉空白行 (防呆)
+            const rows = data.split('\n').slice(1).filter(row => row.trim() !== ''); 
+            const announcementList = document.getElementById('announcements-list');
+            announcementList.innerHTML = ''; // 清空公告欄
+
+            // 顯示全部公告
+            rows.forEach((row, index) => {
+                const columns = row.split(',').map(col => col.replace(/"/g, '').trim());
+                
+                // 設定預設值，避免因為欄位空白導致 undefined (防呆)
+                const title = columns[0] || '無標題';
+                const message = columns[1] || '';
+                const link = columns[2] || '';
+                const date = columns[3] || '';
+
+                const newAnnouncement = document.createElement('div');
+                newAnnouncement.classList.add('announcement');
+                
+                // 創建唯一ID用於識別每個公告
+                const announcementId = `announcement-${index}`;
+                const iframeId = `iframe-${index}`;
+
+                // 提取Google Drive文件ID
+                let driveFileId = link;
+                
+                // 檢查是否有網址，並且是否為Google Drive連結 (防呆)
+                if (driveFileId && driveFileId.includes('drive.google.com')) {
+                    // 從URL中提取文件ID
+                    const match = driveFileId.match(/[-\w]{25,}/);
+                    if (match) {
+                        driveFileId = match[0];
+                    }
+                }
+
+                // 建立 HTML
+                newAnnouncement.innerHTML = `
+                    <h2 class="title"><a href="${link}" class="link" target="_blank">${title}</a></h2>
+                    <p class="message">${message}</p>
+                    <div class="announcement-footer">
+                        <p class="updateTime">發文時間：${date}</p>
+                        <button class="detail-btn" data-file-id="${driveFileId}" data-target="${iframeId}">詳</button>
+                    </div>
+                    <div class="iframe-container" id="${iframeId}" style="display: none; width: 100%; margin-top: 10px;"></div>
+                `;
+                
+                announcementList.appendChild(newAnnouncement);
+            });
             
-            announcementList.appendChild(newAnnouncement);
+            // 為所有"詳"按鈕添加點擊事件
+            document.querySelectorAll('.detail-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const fileId = this.getAttribute('data-file-id');
+                    const targetId = this.getAttribute('data-target');
+                    const container = document.getElementById(targetId);
+
+                    // 對應的原始連結
+                    const originalLink = this.closest('.announcement').querySelector('.link').href;
+
+                    // 檢查是否為 Google Drive PDF 分享連結
+                    const isGoogleDrivePDF = /https:\/\/drive\.google\.com\/.*\/d\/[-\w]{25,}/.test(originalLink) || /https:\/\/drive\.google\.com\/file\/d\/[-\w]{25,}/.test(originalLink);
+
+                    if (!isGoogleDrivePDF) {
+                        // 如果沒有連結，或不是GDrive，開啟新分頁
+                        if(originalLink && originalLink !== window.location.href) {
+                            window.open(originalLink, '_blank');
+                        } else {
+                            alert("此公告沒有提供詳細文件連結。");
+                        }
+                        return;
+                    }
+
+                    // 切換iframe的顯示狀態
+                    if (container.style.display === 'none') {
+                        container.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" width="100%" height="500px" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
+                        container.style.display = 'block';
+                    } else {
+                        container.style.display = 'none';
+                        container.innerHTML = '';
+                    }
+                });
+            });
+        })
+        .catch(error => {
+            // 注意：這裡移除了原本的 alert()。
+            // 讓錯誤在背景產生，如果 30 秒過後 isSuccess 依然是 false，最上面的 errorAlertTimeout 才會跳出視窗。
+            if (error.name === 'AbortError') {
+                console.error('連線逾時 (超過30秒):', error);
+            } else {
+                console.error('Error loading announcements:', error);
+            }
         });
-        
-        // 為所有"詳"按鈕添加點擊事件
-        document.querySelectorAll('.detail-btn').forEach(button => {
-            button.addEventListener('click', function() {
-    const fileId = this.getAttribute('data-file-id');
-    const targetId = this.getAttribute('data-target');
-    const container = document.getElementById(targetId);
-
-    // 對應的原始連結
-    const originalLink = this.closest('.announcement').querySelector('.link').href;
-
-    // 檢查是否為 Google Drive PDF 分享連結
-    const isGoogleDrivePDF = /https:\/\/drive\.google\.com\/.*\/d\/[-\w]{25,}/.test(originalLink) || /https:\/\/drive\.google\.com\/file\/d\/[-\w]{25,}/.test(originalLink);
-
-    if (!isGoogleDrivePDF) {
-        window.open(originalLink, '_blank');
-        return;
     }
 
-    // 切換iframe的顯示狀態
-    if (container.style.display === 'none') {
-        container.innerHTML = `<iframe src="https://drive.google.com/file/d/${fileId}/preview" width="100%" height="500px" frameborder="0" allowtransparency="true" allowfullscreen></iframe>`;
-        container.style.display = 'block';
-    } else {
-        container.style.display = 'none';
-        container.innerHTML = '';
-    }
-});
-
-        });
-    })
-    .catch(error => {
-        console.error('Error loading announcements:', error);
-        alert('無法載入公告，請查看控制台獲取更多資訊。');
+    // 確保在頁面加載完成後執行
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAnnouncements();
     });
-}
-
-// 確保在頁面加載完成後執行
-document.addEventListener('DOMContentLoaded', function() {
-    loadAnnouncements();
-});
     </script>
 
 </body>
